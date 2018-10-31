@@ -17,26 +17,33 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] )  
 
   DifferentialEquation f;
 
-  DifferentialState xx; // x position
-  DifferentialState yy; // y position
-  DifferentialState psi; // vehicle heading
-  DifferentialState delta;
+  DifferentialState x, y, z;
+  DifferentialState vx, vy, vz;
+  DifferentialState phi, theta, psi;
+  DifferentialState xl, yl;
+  DifferentialState ul, vl;
 
-  OnlineData curvature_factor;
-  OnlineData v_ref; // m/s
-  OnlineData l_poly_r0, l_poly_r1, l_poly_r2, l_poly_r3;
-  OnlineData r_poly_r0, r_poly_r1, r_poly_r2, r_poly_r3;
-  OnlineData p_poly_r0, p_poly_r1, p_poly_r2, p_poly_r3;
-  OnlineData l_prob, r_prob, p_prob;
-  OnlineData lane_width;
-
-  Control t;
+  Control p, q, r;
+  Control fT;
+  
+  OnlineData xr, yr, zr;
 
   // Equations of motion
-  f << dot(xx) == v_ref * cos(psi);
-  f << dot(yy) == v_ref * sin(psi);
-  f << dot(psi) == v_ref * delta * curvature_factor;
-  f << dot(delta) == t;
+  f << dot(x) == cos(psi) * cos(theta) * vx + (cos(psi) * sin(phi) * sin(theta) - cos(phi) * sin(psi)) * vy + (sin(phi)*sin(psi) + cos(phi)*cos(psi)*sin(theta)) * vz;
+  f << dot(y) == cos(theta) * sin(psi) * vx + (cos(phi) * cos(psi) + sin(phi) * sin(psi) * sin(theta)) * vy + (cos(phi) * sin(psi) * sin(theta) - cos(psi) * sin(phi)) * vz;
+  f << dot(z) == -sin(theta) * vx + cos(theta) * sin(phi) * vy + cos(phi) * cos(theta) * vz;
+  f << dot(vx) == ;
+  f << dot(vy) == ;
+  f << dot(vz) == ;
+  f << dot(phi) == ;
+  f << dot(theta) == ;
+  f << dot(psi) == ;
+  f << dot(xl) == ;
+  f << dot(yl) == ;
+  f << dot(ul) == ;
+  f << dot(vl) == ;
+
+  
 
   auto lr_prob = l_prob + r_prob - l_prob * r_prob;
 
