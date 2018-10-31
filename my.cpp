@@ -42,7 +42,13 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] )  
   auto zl = z + sqrt(l * l - delta_x * delta_x - delta_y * delta_y);
   auto delta_z = z - zl;
   auto dot_delta_x = dot_x - vxl;
-  auto dot_delta_y = 
+  auto dot_delta_y = dot_y - vyl;
+  auto H = dot_delta_x * delta_x + dot_delta_y * delta_y;
+  auto dot_delta_z = H / delta_z;
+  auto dot_zl = dot_delta_z + dot_z;
+  auto vl_square = vxl * vxl + vyl * vyl + dot_zl * dot_zl;
+  auto fDL_m = -0.5 * cDL * rho * AL * vl_square;
+  auto fDLx = 
   
   // Equations of motion
   f << dot(x) == dot_x; //cos(psi) * cos(theta) * vx + (cos(psi) * sin(phi) * sin(theta) - cos(phi) * sin(psi)) * vy + (sin(phi)*sin(psi) + cos(phi)*cos(psi)*sin(theta)) * vz;
@@ -58,34 +64,6 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] )  
   f << dot(yl) == vyl;
   f << dot(vxl) == ;
   f << dot(vyl) == ;
-
-  
-
-  auto lr_prob = l_prob + r_prob - l_prob * r_prob;
-
-  auto poly_l = l_poly_r0*(xx*xx*xx) + l_poly_r1*(xx*xx) + l_poly_r2*xx + l_poly_r3;
-  auto poly_r = r_poly_r0*(xx*xx*xx) + r_poly_r1*(xx*xx) + r_poly_r2*xx + r_poly_r3;
-  auto poly_p = p_poly_r0*(xx*xx*xx) + p_poly_r1*(xx*xx) + p_poly_r2*xx + p_poly_r3;
-
-  auto angle_l = atan(3*l_poly_r0*xx*xx + 2*l_poly_r1*xx + l_poly_r2);
-  auto angle_r = atan(3*r_poly_r0*xx*xx + 2*r_poly_r1*xx + r_poly_r2);
-  auto angle_p = atan(3*p_poly_r0*xx*xx + 2*p_poly_r1*xx + p_poly_r2);
-
-  // given the lane width estimate, this is where we estimate the path given lane lines
-  auto l_phantom = poly_l - lane_width/2.0;
-  auto r_phantom = poly_r + lane_width/2.0;
-
-  // best path estimate path is a linear combination of poly_p and the path estimate
-  // given the lane lines
-  auto path = lr_prob       * (l_prob * l_phantom + r_prob * r_phantom) / (l_prob + r_prob + 0.0001)
-              + (1-lr_prob) * poly_p;
-
-  auto angle = lr_prob      * (l_prob * angle_l + r_prob * angle_r) / (l_prob + r_prob + 0.0001)
-               + (1-lr_prob) * angle_p;
-
-  // instead of using actual lane lines, use their estimated distance from path given lane_width
-  auto c_left_lane = exp(-(path + lane_width/2.0 - yy));
-  auto c_right_lane = exp(path - lane_width/2.0 - yy);
 
   // Running cost
   Function h;

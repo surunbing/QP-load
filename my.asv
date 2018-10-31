@@ -28,23 +28,40 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] )  
   
   OnlineData xr, yr, zr;
   OnlineData g;
-  OnlineData mF
+  OnlineData mF;
+  OnlineData CDL, rho, AL, 
+  OnlineData l;
+          
+  IntermediateState fHx, fHy, fHz;
   
-  auto 
-  auto fH = 
-
+  auto dot_x = cos(psi) * cos(theta) * vx + (cos(psi) * sin(phi) * sin(theta) - cos(phi) * sin(psi)) * vy + (sin(phi)*sin(psi) + cos(phi)*cos(psi)*sin(theta)) * vz;
+  auto dot_y = cos(theta) * sin(psi) * vx + (cos(phi) * cos(psi) + sin(phi) * sin(psi) * sin(theta)) * vy + (cos(phi) * sin(psi) * sin(theta) - cos(psi) * sin(phi)) * vz;
+  auto dot_z = -sin(theta) * vx + cos(theta) * sin(phi) * vy + cos(phi) * cos(theta) * vz;
+  auto delta_x = x - xl;
+  auto delta_y = y - yl;
+  auto zl = z + sqrt(l * l - delta_x * delta_x - delta_y * delta_y);
+  auto delta_z = z - zl;
+  auto dot_delta_x = dot_x - vxl;
+  auto dot_delta_y = dot_y - vyl;
+  auto H = dot_delta_x * delta_x + dot_delta_y * delta_y;
+  auto dot_delta_z = H / delta_z;
+  auto dot_zl = dot_delta_z + dot_z;
+  auto vl_square = vxl * vxl + vyl * vyl + dot_zl * dot_zl;
+  auto fDL_m = -0.5 * cDL * rho * AL * vl_square;
+  auto fDLx = 
+  
   // Equations of motion
-  f << dot(x) == cos(psi) * cos(theta) * vx + (cos(psi) * sin(phi) * sin(theta) - cos(phi) * sin(psi)) * vy + (sin(phi)*sin(psi) + cos(phi)*cos(psi)*sin(theta)) * vz;
-  f << dot(y) == cos(theta) * sin(psi) * vx + (cos(phi) * cos(psi) + sin(phi) * sin(psi) * sin(theta)) * vy + (cos(phi) * sin(psi) * sin(theta) - cos(psi) * sin(phi)) * vz;
-  f << dot(z) == -sin(theta) * vx + cos(theta) * sin(phi) * vy + cos(phi) * cos(theta) * vz;
+  f << dot(x) == dot_x; //cos(psi) * cos(theta) * vx + (cos(psi) * sin(phi) * sin(theta) - cos(phi) * sin(psi)) * vy + (sin(phi)*sin(psi) + cos(phi)*cos(psi)*sin(theta)) * vz;
+  f << dot(y) == dot_y; //cos(theta) * sin(psi) * vx + (cos(phi) * cos(psi) + sin(phi) * sin(psi) * sin(theta)) * vy + (cos(phi) * sin(psi) * sin(theta) - cos(psi) * sin(phi)) * vz;
+  f << dot(z) == dot_z; //-sin(theta) * vx + cos(theta) * sin(phi) * vy + cos(phi) * cos(theta) * vz;
   f << dot(vx) == r * vy - q * vz - g * sin(theta) + (fHz * cos(psi) * cos(theta) - fHz * cos(theta) * sin(psi)) / mF;
   f << dot(vy) == p * vz - r * vx + g * cos(theta) * sin(phi) +  (fHy * (cos(phi) * cos(psi) + sin(phi) * sin(psi) * sin(theta)) - fHz * (cos(phi) * sin(psi) - cos(psi) * sin(phi) * sin(theta)) + fHz * cos(theta) * sin(phi)) / mF;
-  f << dot(vz) == q * vx - p * vy + g * cos(phi) * cos(theta) -(fT + fHy * (cos(psi) * sin(phi) - cos(phi) * sin(psi) * sin(theta)) - fHz * (sin(phi) * sin(psi) + cos(phi) * cos(psi)*sin(theta)) - fHz*cos(phi)*cos(theta))/mF;
-  f << dot(phi) == ;
-  f << dot(theta) == ;
-  f << dot(psi) == ;
-  f << dot(xl) == ;
-  f << dot(yl) == ;
+  f << dot(vz) == q * vx - p * vy + g * cos(phi) * cos(theta) -(fT + fHy * (cos(psi) * sin(phi) - cos(phi) * sin(psi) * sin(theta)) - fHz * (sin(phi) * sin(psi) + cos(phi) * cos(psi) * sin(theta)) - fHz * cos(phi) * cos(theta)) / mF;
+  f << dot(phi) == p + (r * cos(phi) * sin(theta)) / cos(theta) + (q * sin(phi) * sin(theta)) / cos(theta);
+  f << dot(theta) == q * cos(phi) - r * sin(phi);
+  f << dot(psi) == (r * cos(phi)) / cos(theta) + (q * sin(phi)) / cos(theta);
+  f << dot(xl) == vxl;
+  f << dot(yl) == vyl;
   f << dot(vxl) == ;
   f << dot(vyl) == ;
 
