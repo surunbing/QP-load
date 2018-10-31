@@ -69,42 +69,46 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] )  
   Function h;
 
   // Distance errors
-  h << path - yy;
-  h << lr_prob * c_left_lane;
-  h << lr_prob * c_right_lane;
+  h << x - xr;
+  h << y - yr;
+  h << z - zr;
+  h << xl - xr;
+  h << yl - yr;
+  h << p;
+  h << q;
+  h << r;
+  h << fT;
 
-  // Heading error
-  h << (v_ref + 1.0 ) * (angle - psi);
-
-  // Angular rate error
-  h << (v_ref + 1.0 ) * t;
-
-  DMatrix Q(5,5); 
+  DMatrix Q(9,9); 
 //Q.setAll(false);
-  Q(0,0) = 1.0;
-  Q(1,1) = 1.0;
+  Q(0,0) = 0.1;
+  Q(1,1) = 0.1;
   Q(2,2) = 1.0;
   Q(3,3) = 1.0;
-  Q(4,4) = 2.0;
+  Q(4,4) = 1.0;
+  Q(5,5) = 0.01;
+  Q(6,6) = 0.01;
+  Q(7,7) = 0.01;
+  Q(8,8) = 0.01;
 
 
   // Terminal cost
   Function hN;
 
   // Distance errors
-  hN << path - yy;
-  hN << l_prob * c_left_lane;
-  hN << r_prob * c_right_lane;
+  h << x - xr;
+  h << y - yr;
+  h << z - zr;
+  h << xl - xr;
+  h << yl - yr;
 
-  // Heading errors
-  hN << (2.0 * v_ref + 1.0 ) * (angle - psi);
-
-  DMatrix QN(4,4); 
+  DMatrix QN(5,5); 
 //QN.setAll(false);
-  QN(0,0) = 1.0;
-  QN(1,1) = 1.0;
+  QN(0,0) = 0.1;
+  QN(1,1) = 0.1;
   QN(2,2) = 1.0;
   QN(3,3) = 1.0;
+  QN(4,4) = 1.0;
 
   // Non uniform time grid
   // First 5 timesteps are 0.05, after that it's 0.15

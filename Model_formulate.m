@@ -19,11 +19,11 @@ RT = R';
 ans = g * RT * [0; 0; 1];
 
 syms mF fT fHx fHy fHz
-fH = [fHz; fHy; fHz];
+fH = [fHx; fHy; fHz];
 ans = (RT * fH - fT * [0; 0; 1]) / mF;
 
 J = [cos(theta), sin(phi) * sin(theta), cos(phi) * sin(theta); 0, cos(phi) * cos(theta), -sin(phi) * cos(theta); 0, sin(phi), cos(phi)] / cos(theta);
 ans = J * [p; q; r];
 
-syms a b c x y z
-ans = cross([a, b, c], [x, y, z]);
+syms rx ry rz fx fy fz
+ans = cross([rx; ry; rz], [fx; fy; fz]);
