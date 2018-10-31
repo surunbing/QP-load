@@ -18,6 +18,4 @@ syms g
 RT = R';
 ans = g * RT * [0; 0; 1];
 
-syms mF fT fHx fHy fHz
-fH = [fHz; fHy; fHz];
-ans = (RT * fH - fT * [0; 0; 1]) / mF;
+syms mF

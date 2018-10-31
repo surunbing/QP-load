@@ -28,7 +28,6 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] )  
   
   OnlineData xr, yr, zr;
   OnlineData g;
-  OnlineData mF
   
   auto 
   auto fH = 
@@ -37,7 +36,7 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] )  
   f << dot(x) == cos(psi) * cos(theta) * vx + (cos(psi) * sin(phi) * sin(theta) - cos(phi) * sin(psi)) * vy + (sin(phi)*sin(psi) + cos(phi)*cos(psi)*sin(theta)) * vz;
   f << dot(y) == cos(theta) * sin(psi) * vx + (cos(phi) * cos(psi) + sin(phi) * sin(psi) * sin(theta)) * vy + (cos(phi) * sin(psi) * sin(theta) - cos(psi) * sin(phi)) * vz;
   f << dot(z) == -sin(theta) * vx + cos(theta) * sin(phi) * vy + cos(phi) * cos(theta) * vz;
-  f << dot(vx) == r * vy - q * vz - g * sin(theta) + ;
+  f << dot(vx) == r * vy - q * vz - g * ;
   f << dot(vy) == ;
   f << dot(vz) == ;
   f << dot(phi) == ;
