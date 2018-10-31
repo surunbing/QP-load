@@ -28,6 +28,7 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] )  
   
   OnlineData xr, yr, zr;
   OnlineData g;
+  OnlineData mF
   
   auto 
   auto fH = 
@@ -36,9 +37,9 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] )  
   f << dot(x) == cos(psi) * cos(theta) * vx + (cos(psi) * sin(phi) * sin(theta) - cos(phi) * sin(psi)) * vy + (sin(phi)*sin(psi) + cos(phi)*cos(psi)*sin(theta)) * vz;
   f << dot(y) == cos(theta) * sin(psi) * vx + (cos(phi) * cos(psi) + sin(phi) * sin(psi) * sin(theta)) * vy + (cos(phi) * sin(psi) * sin(theta) - cos(psi) * sin(phi)) * vz;
   f << dot(z) == -sin(theta) * vx + cos(theta) * sin(phi) * vy + cos(phi) * cos(theta) * vz;
-  f << dot(vx) == r * vy - q * vz - g * ;
-  f << dot(vy) == ;
-  f << dot(vz) == ;
+  f << dot(vx) == r * vy - q * vz - g * sin(theta) + (fHz * cos(psi) * cos(theta) - fHz * cos(theta) * sin(psi)) / mF;
+  f << dot(vy) == p * vz - r * vx + g * cos(theta) * sin(phi) +  (fHy * (cos(phi) * cos(psi) + sin(phi) * sin(psi) * sin(theta)) - fHz * (cos(phi) * sin(psi) - cos(psi) * sin(phi) * sin(theta)) + fHz * cos(theta) * sin(phi)) / mF;
+  f << dot(vz) == q * vx - p * vy + g * cos(phi) * cos(theta) -(fT + fHy * (cos(psi) * sin(phi) - cos(phi) * sin(psi) * sin(theta)) - fHz * (sin(phi) * sin(psi) + cos(phi) * cos(psi)*sin(theta)) - fHz*cos(phi)*cos(theta))/mF;
   f << dot(phi) == ;
   f << dot(theta) == ;
   f << dot(psi) == ;
