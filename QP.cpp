@@ -7,7 +7,7 @@ USING_NAMESPACE_ACADO
 #define PI 3.1415926536
 #define deg2rad(d) (d/180.0*PI)
 
-const int controlHorizon = 50;
+const int controlHorizon = 10;
 
 //using namespace std;
 
@@ -65,9 +65,6 @@ int main( )
   f << dot(r31) == r32 * wwz - r33 * wwy;
   f << dot(r32) == r33 * wwx - r31 * wwz;
   f << dot(r33) == r31 * wwy - r32 * wwx;
-//  f << 0 == dot(wwx)*j11 - mx + dot(wwy)*j12 + dot(wwz)*j13 + wy*(j31*wx + j32*wy + j33*wz) - wz*(j21*wx + j22*wy + j23*wz);
-//  f << 0 == dot(wwx)*j21 - my + dot(wwy)*j22 + dot(wwz)*j23 - wx*(j31*wx + j32*wy + j33*wz) + wz*(j11*wx + j12*wy + j13*wz);
-//  f << 0 == dot(wwx)*j31 - mz + dot(wwy)*j32 + dot(wwz)*j33 + wx*(j21*wx + j22*wy + j23*wz) - wy*(j11*wx + j12*wy + j13*wz);
 
   f << dot(wwx) == b1 / j11;
   f << dot(wwy) == b2 / j22;
@@ -121,12 +118,11 @@ int main( )
   ocp.minimizeLSQEndTerm(QN, hN);
 
   // car can't go backward to avoid "circles"
-  ocp.subjectTo( qz <= -cos(PI / 12));
-  // more than absolute max steer angle
-  ocp.subjectTo( -800 <= F <= 1200);
-  ocp.subjectTo( -50 <= mx <= 50);
-  ocp.subjectTo( -50 <= my <= 50);
-  ocp.subjectTo( -80 <= mz <= 80);
+//  ocp.subjectTo( qz <= -cos(PI / 12));
+//  ocp.subjectTo( -800 <= F <= 1200);
+//  ocp.subjectTo( -50 <= mx <= 50);
+//  ocp.subjectTo( -50 <= my <= 50);
+//  ocp.subjectTo( -80 <= mz <= 80);
 
   ocp.setNOD(16);
 
