@@ -61,45 +61,52 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] )  
   f << dot(r32) == r33 * wwx - r31 * wwz;
   f << dot(r33) == r31 * wwy - r32 * wwx;
   f << 0 == dot(wwx)*j11 - mx + dot(wwy)*j12 + dot(wwz)*j13 + wy*(j31*wx + j32*wy + j33*wz) - wz*(j21*wx + j22*wy + j23*wz);
-  f << 0 == dot(wwx)*j21 - my + dot(wwy)*j22 + dot(wwz)*j23 - wx*(j31*wx + j32*wy + j33*wz) + wz*(j11*wx + j12*wy + j13*wz);
-  f << 0 == dot(wwx)*j21 - my + dot(wwy)*j22 + dot(wwz)*j23 - wx*(j31*wx + j32*wy + j33*wz) + wz*(j11*wx + j12*wy + j13*wz);
+  f << 0 == dot(wwx*j21 - my + dwwy*j22 + dwwz*j23 - wx*(j31*wx + j32*wy + j33*wz) + wz*(j11*wx + j12*wy + j13*wz);
+  f << 0 == dwwx*j21 - my + dwwy*j22 + dwwz*j23 - wx*(j31*wx + j32*wy + j33*wz) + wz*(j11*wx + j12*wy + j13*wz);
   // Running cost
-  
   Function h;
 
   // Distance errors
+  h << x - xr;
+  h << y - yr;
+  h << z - zr;
   h << xl - xr;
   h << yl - yr;
-  h << zl - zr;
-  h << mx;
-  h << my;
-  h << mz;
-  h << f;
+  h << p;
+  h << q;
+  h << r;
+  h << fT;
 
-  DMatrix Q(7,7); 
+  DMatrix Q(9,9); 
 //Q.setAll(false);
   Q(0,0) = 0.1;
   Q(1,1) = 0.1;
   Q(2,2) = 1.0;
   Q(3,3) = 1.0;
-  Q(4,4) = 0.01;
+  Q(4,4) = 1.0;
   Q(5,5) = 0.01;
   Q(6,6) = 0.01;
+  Q(7,7) = 0.01;
+  Q(8,8) = 0.01;
 
 
   // Terminal cost
   Function hN;
 
   // Distance errors
-  hN << xl - xr;
-  hN << yl - yr;
-  hN << zl - zr;
-  
-  DMatrix QN(3,3); 
+  h << x - xr;
+  h << y - yr;
+  h << z - zr;
+  h << xl - xr;
+  h << yl - yr;
+
+  DMatrix QN(5,5); 
 //QN.setAll(false);
   QN(0,0) = 0.1;
   QN(1,1) = 0.1;
   QN(2,2) = 1.0;
+  QN(3,3) = 1.0;
+  QN(4,4) = 1.0;
 
   // Non uniform time grid
   // First 5 timesteps are 0.05, after that it's 0.15
@@ -113,16 +120,16 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] )  
 
   // Setup Optimal Control Problem
   const double tStart = 0.0;
-  const double tEnd   = 5.0;
+  const double tEnd   = 2.5;
 
-  OCP ocp( tStart, tEnd, 50);
+  OCP ocp( tStart, tEnd, numSteps);
   ocp.subjectTo(f);
 
   ocp.minimizeLSQ(Q, h);
   ocp.minimizeLSQEndTerm(QN, hN);
 
   // car can't go backward to avoid "circles"
-  ocp.subjectTo( 0 <= f <= 15.0);
+  ocp.subjectTo( deg2rad(-90) <= psi <= deg2rad(90));
   // more than absolute max steer angle
   ocp.subjectTo( deg2rad(-50) <= delta <= deg2rad(50));
   ocp.setNOD(18);
