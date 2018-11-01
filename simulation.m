@@ -1,26 +1,36 @@
 clc, clear
 close all
 
-global mF ml l AL cDL g rho p q r fT fHx fHy fHz
+global g;
+global mq ml;
+global L;
+global j11 j12 j13 j21 j22 j23 j31 j32 j33;
 
-mF = 0.93;
-ml = 0.2;
-l = 1.0;
-AL = 0.0142;
-cDL = 1.2;
-g = 0.9810;
-rho = 1.1840;
+g = 1.6;
+mq = 200;
+ml = 300;
+L = 8;
+j11 = 100;
+j12 = 0;
+j13 = 0;
+j21 = 0;
+j22 = 100;
+j23 = 0;
+j31 = 0;
+j32 = 0;
+j33 = 100;
 
-p = 0;
-q = 0;
-r = 0.001;
-fT = (mF + ml) * g;
-fHx = 0;
-fHy = 0;
-fHz = ml * g;
+%% ³õÖµ
 
+x0 = [0; 10; 10];
+v0 = [0; 0; 0];
+q0 = [0; 0; -1];
+omega0 = [0; 0; 0];
+R0 = [1; 0; 0; 0; 1; 0; 0; 0; 1];
+OMEGA0 = [0; 0; 0];
 tic
-x0 = [1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0];
+x_start = [x0; v0; q0; omega0; R0; OMEGA0; 0; 0; 1; (mq + ml) * g + 10];
+
 T_val = 1;
-[t, tmpx] = ode45(@QP_Model, [0 T_val], x0);
+[t, tmpx] = ode45(@QP_Model, [0 T_val], x_start);
 toc
